@@ -149,6 +149,39 @@ fn part1() {
     }
 }
 
+fn part2() {
+    let input = include_str!("input.txt");
+    let (bingo_sequence, search_table, mut boards) = parse_boards(input);
+    let board_count = boards.len();
+
+
+    // Now play bingo :)
+    let mut boards_won: u32 = 0;
+    for s in bingo_sequence {
+        // Lookup all boards this number has to be added to
+        for b in search_table.iterate_boards(s) {
+            // Endmarker - could be abstracted in custom iterator
+            if *b == u32::MAX {
+                break;
+            }
+            let has_already_won = boards[*b as usize].has_won();
+            boards[*b as usize].occupy_number(s);
+            let has_won_after = boards[*b as usize].has_won();
+            boards_won += (has_won_after != has_already_won) as u32;
+            if boards_won == board_count as u32 {
+                let board = &boards[*b as usize];
+                println!("Found board {} at sequence {}", b, s);
+                println!("Unmarked sum = {}", board.sum_unmarked_numbers());
+                println!("Result = {}", board.sum_unmarked_numbers() * s as i32);
+                return;
+
+            }
+        }
+        println!("Boards won = {}", boards_won);
+
+    }
+}
+
 fn parse_boards(input: &str) -> (Vec<u8>, BoardLookupTable, Vec<Board>) {
     let mut lines = input.lines().into_iter();
     let bingo_sequence: Vec<u8> = lines.next().unwrap().trim().split(',')
@@ -194,6 +227,8 @@ fn parse_boards(input: &str) -> (Vec<u8>, BoardLookupTable, Vec<Board>) {
 fn main() {
     let enabled = ansi_term::enable_ansi_support();
     part1();
+    println!();
+    part2();
 }
 
 #[cfg(test)]
