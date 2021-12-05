@@ -25,7 +25,7 @@ impl PointIterator {
     pub fn from(line: Line) -> PointIterator {
         PointIterator {
             line,
-            position: -1
+            position: -1,
         }
     }
 }
@@ -40,7 +40,7 @@ impl Iterator for PointIterator {
                     None
                 } else {
                     self.position += 1;
-                    Some(Point {x: p1.x.min(p2.x) + self.position, y: p1.y})
+                    Some(Point { x: p1.x.min(p2.x) + self.position, y: p1.y })
                 }
             }
             Vertical(p1, p2) => {
@@ -48,10 +48,20 @@ impl Iterator for PointIterator {
                     None
                 } else {
                     self.position += 1;
-                    Some(Point {y: p1.y.min(p2.y) + self.position, x: p1.x})
+                    Some(Point { y: p1.y.min(p2.y) + self.position, x: p1.x })
                 }
             }
-            Diagonal(_, _) => {None}
+            Diagonal(p1, p2) => {
+                if (p2.x - p1.x).abs() <= self.position {
+                    None
+                } else {
+                    self.position += 1;
+                    Some(Point {
+                        x: p1.x + (p2.x - p1.x).signum() * self.position,
+                        y: p1.y + (p2.y - p1.y).signum() * self.position,
+                    })
+                }
+            }
         }
     }
 }
@@ -96,21 +106,37 @@ fn parse(content: &str) -> Vec<Line> {
     lines
 }
 
-fn part1() {
+fn part2() {
     let content = include_str!("input.txt");
     let lines = parse(content);
     let it = lines.into_iter().map(|l| l.into_iter()).flatten();
     let mut map: HashMap<Point, i32> = HashMap::new();
     for point in it {
         match map.entry(point) {
-            Entry::Occupied(mut o) => {*o.get_mut() += 1;}
-            Entry::Vacant(v) => {v.insert(0);}
+            Entry::Occupied(mut o) => { *o.get_mut() += 1; }
+            Entry::Vacant(v) => { v.insert(0); }
         }
     }
+    println!("Total entries: {}", map.values().into_iter().filter(|&&i| i > 0).count());
+}
 
+fn part1() {
+    let content = include_str!("input.txt");
+    let lines = parse(content);
+    let it = lines.into_iter()
+        .filter(|l| !matches!(l, Diagonal(_, _)))
+        .map(|l| l.into_iter()).flatten();
+    let mut map: HashMap<Point, i32> = HashMap::new();
+    for point in it {
+        match map.entry(point) {
+            Entry::Occupied(mut o) => { *o.get_mut() += 1; }
+            Entry::Vacant(v) => { v.insert(0); }
+        }
+    }
     println!("Total entries: {}", map.values().into_iter().filter(|&&i| i > 0).count());
 }
 
 fn main() {
     part1();
+    part2();
 }
