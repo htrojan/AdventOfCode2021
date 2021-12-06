@@ -9,17 +9,10 @@ fn part1_part2(simulation_days: i32) {
     for day in 0..simulation_days {
         print!("Day {}: ", day);
         println!("{}", population.iter().fold(String::new(), |a, b| a + " " +b.to_string().as_str()));
-        let to_create = population[0];
-        population[0] = population[1];
-        population[1] = population[2];
-        population[2] = population[3];
-        population[3] = population[4];
-        population[4] = population[5];
-        population[5] = population[6];
-        population[6] = population[7];
-        population[7] = population[8];
-        population[8] = to_create;
-        population[6] += to_create;
+        let babies = population[0];
+        (0..8).for_each(|i| population[i] = population[i+1]);
+        population[8] = babies;
+        population[6] += babies;
     }
     println!("Population: {}", population.into_iter().sum::<u64>());
 }
