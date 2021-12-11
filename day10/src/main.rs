@@ -95,7 +95,7 @@ enum ValidationResult {
     Invalid(ValidationError),
     TooMuchClosingBrackets,
     Incomplete(VecDeque<Type>),
-    Undefined
+    EncounteredUndefinedToken
 }
 
 fn validate<I>(mut tokens: TokenStream<I>) -> ValidationResult
@@ -119,7 +119,7 @@ fn validate<I>(mut tokens: TokenStream<I>) -> ValidationResult
                 }
             }
             Token::Undefined => {
-                return ValidationResult::Undefined;
+                return ValidationResult::EncounteredUndefinedToken;
             }
         }
     }
