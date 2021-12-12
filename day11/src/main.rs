@@ -136,10 +136,8 @@ fn part2() {
 
         while let Some(position) = flashing.pop_front() {
             let index = board.get_index();
-            // println!("Position: {}", position);
             for n in board.get_neighbours_of(position)
                 .map(|(x, y)| index.coords_to_index(x, y)) {
-                // println!("n: {}", n);
                 board.fields[n] += 1;
                 // Flashes for the first time as it reaches level greater 9
                 if board.fields[n] == 10 {
@@ -174,16 +172,13 @@ fn part1() {
 
         while let Some(position) = flashing.pop_front() {
             let index = board.get_index();
-            // println!("Position: {}", position);
             for n in board.get_neighbours_of(position)
                 .map(|(x, y)| index.coords_to_index(x, y)) {
-                // println!("n: {}", n);
                 board.fields[n] += 1;
                 // Flashes for the first time as it reaches level greater 9
                 if board.fields[n] == 10 {
                     flashing.push_back(n);
                     flashing_octopus += 1;
-                    // println!("Position {} flashed!", n);
                 }
             }
         }
